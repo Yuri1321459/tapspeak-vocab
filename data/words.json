@@ -2489,7 +2489,7 @@
       "word": "Cat",
       "word_key": "cat",
       "desc_lv2_en": "The cat does not work on the farm but raises overall happiness just by living there.",
-      "image_file": "Cat 1.png",
+      "image_file": "Cat.png",
       "sort_order": "1102"
     },
     {
@@ -2529,7 +2529,7 @@
       "word": "Dog",
       "word_key": "dog",
       "desc_lv2_en": "The dog sometimes points toward hidden items on the ground.",
-      "image_file": "Dog 1.png",
+      "image_file": "Dog.png",
       "sort_order": "1103"
     },
     {
