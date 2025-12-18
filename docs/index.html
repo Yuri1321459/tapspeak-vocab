@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TapSpeak Vocab</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:#0b1220;
+      color:#fff;
+    }
+    .hidden{display:none}
+
+    /* 共通 */
+    button{
+      font-size:20px;
+      font-weight:800;
+      padding:18px;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
+    }
+
+    /* ===== ユーザー選択 ===== */
+    #viewUser{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:24px;
+    }
+    .userBtn{
+      width:70%;
+      max-width:320px;
+      background:#1f2a44;
+    }
+    .devNote{
+      position:fixed;
+      bottom:8px;
+      font-size:12px;
+      opacity:.5;
+    }
+
+    /* ===== 個人ホーム ===== */
+    #viewHome{
+      padding:16px;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .homeTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .homeCenter{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:24px;
+    }
+    .btnWord{background:#3b6cff}
+    .btnReview{background:#1ec98a}
+    .homeBottom{
+      text-align:center;
+      font-size:14px;
+      opacity:.7;
+    }
+
+    /* ===== たんご / ふくしゅう ===== */
+    #viewWords{background:#14285a;min-height:100vh;padding:16px}
+    #viewReview{background:#0f3d2c;min-height:100vh;padding:16px}
+
+    .topSwitch{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:16px;
+    }
+
+    /* ===== 設定 ===== */
+    #viewSettings{
+      padding:16px;
+      background:#111;
+      min-height:100vh;
+    }
+    .settingBlock{
+      margin-bottom:24px;
+      padding:16px;
+      background:#1b1b1b;
+      border-radius:12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ユーザー選択 -->
+<section id="viewUser">
+  <button class="userBtn" data-user="riona">りおな</button>
+  <button class="userBtn" data-user="soma">そうま</button>
+  <div class="devNote">開発者用</div>
+</section>
+
+<!-- 個人ホーム -->
+<section id="viewHome" class="hidden">
+  <div class="homeTop">
+    <div>⭐ <span id="pointText">0</span></div>
+    <button id="btnUser">👤</button>
+  </div>
+
+  <div class="homeCenter">
+    <button class="btnWord" id="goWords">たんご</button>
+    <button class="btnReview" id="goReview">
+      ふくしゅう：<span id="dueCount">0</span>こ
+    </button>
+  </div>
+
+  <div class="homeBottom">
+    <button id="goSettings">設定</button>
+  </div>
+</section>
+
+<!-- たんご -->
+<section id="viewWords" class="hidden">
+  <div class="topSwitch">
+    <button id="toReview">ふくしゅう</button>
+    <button id="backHome1">←</button>
+  </div>
+  <div id="wordsRoot"></div>
+</section>
+
+<!-- ふくしゅう -->
+<section id="viewReview" class="hidden">
+  <div class="topSwitch">
+    <button id="toWords">たんご</button>
+    <button id="backHome2">←</button>
+  </div>
+  <div id="reviewRoot"></div>
+</section>
+
+<!-- 設定 -->
+<section id="viewSettings" class="hidden">
+  <h2>設定</h2>
+
+  <div class="settingBlock">
+    <h3>ユーザーアイコン</h3>
+    <input type="file" id="iconInput">
+  </div>
+
+  <div class="settingBlock">
+    <h3>バックアップ</h3>
+    <button id="exportData">書き出す</button>
+    <input type="file" id="importData">
+  </div>
+
+  <div class="settingBlock">
+    <h3>ポイントリセット</h3>
+    <input type="password" id="pinPoint" placeholder="PIN">
+    <button id="resetPoint">実行</button>
+  </div>
+
+  <div class="settingBlock">
+    <h3>学習をすべてリセット</h3>
+    <input type="password" id="pinAll" placeholder="PIN">
+    <button id="resetAll">実行</button>
+  </div>
+
+  <button id="backHome3">← もどる</button>
+</section>
+
+<script src="js/storage.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/words.js"></script>
+<script src="js/review.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
+
+
