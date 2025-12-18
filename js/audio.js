@@ -1,142 +1,99 @@
-/* TapSpeak Vocab - audio.js
-   Purpose:
-   - Centralized audio management
-   - iOS/Safari reliable playback
-   - No overlapping sounds
-   - UI sounds only (no reveal sound)
-
-   Managed sounds:
-   - speak_start.mp3
-   - correct.mp3
-   - wrong.mp3
-   - point.mp3
+/* TapSpeak Vocab - audio.js (Complete)
+   - UI効果音：assets/sounds/ui/*.mp3
+   - TTS：SpeechSynthesis（iOS Safari対応：ユーザー操作でunlock）
+   - 音は重ね再生しない（UI音は1本、TTSもcancelしてから）
 */
 
 (function () {
   "use strict";
 
+  if (window.TapSpeakAudio) return;
+
+  const UI_BASE = "assets/sounds/ui/";
+
+  // 仕様で確定しているUI音
   const UI_SOUNDS = {
-    speak: "assets/sounds/ui/speak_start.mp3",
-    correct: "assets/sounds/ui/correct.mp3",
-    wrong: "assets/sounds/ui/wrong.mp3",
-    point: "assets/sounds/ui/point.mp3"
+    speak_start: UI_BASE + "speak_start.mp3",
+    correct: UI_BASE + "correct.mp3",
+    wrong: UI_BASE + "wrong.mp3",
+    point: UI_BASE + "point.mp3"
   };
 
-  const _players = {};
-  let _unlocked = false;
+  // UI音は1つだけ使い回して「重ねない」
+  const uiAudio = new Audio();
+  uiAudio.preload = "auto";
 
-  /* --------------------------------------------------
-     iOS unlock
-     Must be called once by a user gesture
-  -------------------------------------------------- */
+  let unlocked = false;
+
+  function _safePlay(audioEl) {
+    // iOSで play() がPromiseを返し失敗することがあるので握りつぶす
+    try {
+      const p = audioEl.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch (_) {}
+  }
+
   function unlockByUserGesture() {
-    if (_unlocked) return;
+    if (unlocked) return;
+    unlocked = true;
 
-    Object.keys(UI_SOUNDS).forEach(key => {
-      const audio = new Audio(UI_SOUNDS[key]);
-      audio.preload = "auto";
-      audio.muted = true;
-
-      // play & pause immediately to unlock
-      audio.play().then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.muted = false;
-      }).catch(() => {
-        // ignore (Safari sometimes blocks silently)
-        audio.muted = false;
-      });
-
-      _players[key] = audio;
-    });
-
-    _unlocked = true;
-  }
-
-  /* --------------------------------------------------
-     Internal helper
-  -------------------------------------------------- */
-  function stop(audio) {
-    if (!audio) return;
+    // iOS向け：無音に近い再生で「オーディオ許可」を得る
+    // （実際はsrcなしでも play() が失敗することがあるため、短い操作を行う）
     try {
-      audio.pause();
-      audio.currentTime = 0;
-    } catch (e) {}
+      uiAudio.pause();
+      uiAudio.currentTime = 0;
+      uiAudio.src = UI_SOUNDS.speak_start; // 既存の短い音を利用
+      uiAudio.volume = 0.0001;
+      _safePlay(uiAudio);
+      // すぐ戻す
+      setTimeout(() => {
+        try {
+          uiAudio.pause();
+          uiAudio.currentTime = 0;
+          uiAudio.volume = 1;
+        } catch (_) {}
+      }, 50);
+    } catch (_) {}
   }
 
-  function playOnce(key) {
-    if (!_unlocked) return;
-
-    const audio = _players[key];
-    if (!audio) return;
-
-    // Do not overlap
-    stop(audio);
-
-    try {
-      audio.currentTime = 0;
-      audio.play();
-    } catch (e) {
-      // Safari may still block; ignore
-    }
-  }
-
-  /* --------------------------------------------------
-     Public API
-  -------------------------------------------------- */
-  function playSpeakStart() {
-    playOnce("speak");
-  }
-
-  function playCorrect() {
-    playOnce("correct");
-  }
-
-  function playWrong() {
-    playOnce("wrong");
-  }
-
-  function playPoint() {
-    playOnce("point");
-  }
-
-  /* --------------------------------------------------
-     Word audio (per-word mp3)
-     - Single-use Audio object
-     - Stops previous word sound
-  -------------------------------------------------- */
-  let _wordAudio = null;
-
-  function playWord(src) {
+  function playUI(key) {
+    const src = UI_SOUNDS[key];
     if (!src) return;
 
-    if (_wordAudio) {
-      stop(_wordAudio);
-      _wordAudio = null;
-    }
-
-    const audio = new Audio(src);
-    audio.preload = "auto";
-    _wordAudio = audio;
-
     try {
-      audio.play();
-    } catch (e) {
-      // ignore
-    }
+      // 重ね再生禁止：必ず停止して差し替え
+      uiAudio.pause();
+      uiAudio.currentTime = 0;
+      uiAudio.src = src;
+      uiAudio.volume = 1;
+      _safePlay(uiAudio);
+    } catch (_) {}
   }
 
-  /* --------------------------------------------------
-     Expose
-  -------------------------------------------------- */
+  function speakText(text, lang = "en-US") {
+    const t = String(text || "").trim();
+    if (!t) return;
+
+    // 重ねない
+    try {
+      window.speechSynthesis.cancel();
+    } catch (_) {}
+
+    // iOS Safariは音声が出ないことがあるので、できる範囲で安全に
+    try {
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = lang;
+      u.rate = 0.95;
+      u.pitch = 1.0;
+      u.volume = 1.0;
+      window.speechSynthesis.speak(u);
+    } catch (_) {}
+  }
+
+  // Public API
   window.TapSpeakAudio = {
     unlockByUserGesture,
-
-    playSpeakStart,
-    playCorrect,
-    playWrong,
-    playPoint,
-
-    playWord
+    playUI,
+    speakText
   };
 })();
