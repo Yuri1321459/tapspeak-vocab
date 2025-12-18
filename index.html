@@ -2,413 +2,181 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1220" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TapSpeak Vocab</title>
+
   <style>
-    :root{
-      --bg:#070b12;
-      --panel:rgba(255,255,255,.06);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --line:rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --radius:18px;
-
-      --blueA:#2b5cff;
-      --blueB:#00c2ff;
-
-      --greenA:#1bdc7a;
-      --greenB:#00c2a8;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
     body{
       margin:0;
-      font-family: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(43,92,255,.18), transparent 60%),
-        radial-gradient(900px 500px at 90% 0%, rgba(27,220,122,.12), transparent 55%),
-        radial-gradient(1000px 700px at 50% 110%, rgba(0,194,255,.10), transparent 55%),
-        var(--bg);
-      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:#0b1220;
+      color:#fff;
+    }
+    .hidden{display:none}
+
+    /* 共通 */
+    button{
+      font-size:20px;
+      font-weight:800;
+      padding:18px;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
     }
 
-    /* Top bar */
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:10;
-      padding: 14px 14px calc(14px + env(safe-area-inset-top));
-      backdrop-filter: blur(14px);
-      background: linear-gradient(to bottom, rgba(7,11,18,.92), rgba(7,11,18,.65));
-      border-bottom:1px solid var(--line);
-    }
-    .topbar__row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      max-width: 980px;
-      margin: 0 auto;
-    }
-    .brand{
+    /* ===== ユーザー選択 ===== */
+    #viewUser{
+      min-height:100vh;
       display:flex;
       flex-direction:column;
-      line-height:1.15;
-      gap:6px;
-      min-width: 220px;
-    }
-    .brand__title{
-      font-weight: 900;
-      letter-spacing: .2px;
-      font-size: 15px;
-      opacity:.98;
-    }
-    .brand__sub{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size: 13px;
-      color: var(--muted);
-      flex-wrap:wrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      white-space:nowrap;
-    }
-    .pill strong{
-      color: var(--text);
-      font-weight:900;
-      font-size: 14px;
-    }
-    .modeTag{
-      font-weight:900;
-      border-radius: 999px;
-      padding: 8px 12px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      font-size: 13px;
-      white-space:nowrap;
-    }
-    .modeTag[data-mode="words"]{ box-shadow: 0 0 0 1px rgba(43,92,255,.25) inset; }
-    .modeTag[data-mode="review"]{ box-shadow: 0 0 0 1px rgba(27,220,122,.22) inset; }
-
-    .actions{
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .btn{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 12px;
-      font-weight: 800;
-      font-size: 13px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .btn--icon{ padding:10px 12px; }
-    .btn--primary{
-      border: none;
-      background: linear-gradient(135deg, rgba(43,92,255,.95), rgba(0,194,255,.85));
-      box-shadow: 0 10px 25px rgba(43,92,255,.25);
-    }
-    .btn--green{
-      border: none;
-      background: linear-gradient(135deg, rgba(27,220,122,.95), rgba(0,194,168,.85));
-      box-shadow: 0 10px 25px rgba(27,220,122,.18);
-    }
-
-    /* Layout */
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 16px 14px 40px;
-    }
-    .viewTitle{
-      font-size: 18px;
-      font-weight: 900;
-      margin: 14px 4px 14px;
-      letter-spacing:.2px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-    @media (min-width: 820px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-    }
-    .card{
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.045));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .card__head{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 12px;
-    }
-    .card__title{
-      font-size: 16px;
-      font-weight: 900;
-      margin:0;
-    }
-    .card__actions{
-      display:flex;
-      gap:10px;
-    }
-    .card__actions .btn{
-      width: 100%;
       justify-content:center;
-      padding: 14px 14px;
-      font-size: 14px;
-      border-radius: 14px;
-    }
-    .card--small{
-      padding: 12px 14px;
-      box-shadow: none;
-      background: rgba(255,255,255,.04);
-    }
-    .card--small .card__actions .btn{
-      padding: 12px 12px;
-      font-size: 13px;
-    }
-    .hidden{ display:none !important; }
-
-    /* User list */
-    .list{ display:flex; flex-direction:column; gap:10px; }
-    .userItem{
-      display:flex;
       align-items:center;
+      gap:24px;
+    }
+    .userBtn{
+      width:70%;
+      max-width:320px;
+      background:#1f2a44;
+    }
+    .devNote{
+      position:fixed;
+      bottom:8px;
+      font-size:12px;
+      opacity:.5;
+    }
+
+    /* ===== 個人ホーム ===== */
+    #viewHome{
+      padding:16px;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .homeTop{
+      display:flex;
       justify-content:space-between;
-      gap:10px;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
+      align-items:center;
     }
-    .userItem:active{ transform: translateY(1px); }
-    .userItem__name{ font-weight: 950; font-size: 16px; }
-    .devMark{
-      font-size: 11px;
-      color: rgba(255,255,255,.55);
-      border: 1px dashed rgba(255,255,255,.18);
-      padding: 4px 8px;
-      border-radius: 999px;
-      white-space:nowrap;
+    .homeCenter{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:24px;
+    }
+    .btnWord{background:#3b6cff}
+    .btnReview{background:#1ec98a}
+    .homeBottom{
+      text-align:center;
+      font-size:14px;
+      opacity:.7;
     }
 
-    /* Reset block on user screen */
-    .screenNote{
-      color: var(--muted);
-      font-size: 13px;
-      margin: 6px 4px 14px;
-      line-height: 1.6;
-    }
-    .row{
+    /* ===== たんご / ふくしゅう ===== */
+    #viewWords{background:#14285a;min-height:100vh;padding:16px}
+    #viewReview{background:#0f3d2c;min-height:100vh;padding:16px}
+
+    .topSwitch{
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+      justify-content:space-between;
+      margin-bottom:16px;
     }
-    .pinInput{
-      flex: 1;
-      min-width: 160px;
-      padding: 12px;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.95);
-      font-size: 14px;
-      outline:none;
+
+    /* ===== 設定 ===== */
+    #viewSettings{
+      padding:16px;
+      background:#111;
+      min-height:100vh;
     }
-    .btnDanger{
-      border:none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 900;
-      cursor:pointer;
-      background: linear-gradient(135deg, rgba(255,88,88,.92), rgba(255,164,88,.86));
-      color: rgba(7,11,18,.95);
-    }
-    .miniBadge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width: 46px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      font-weight: 900;
+    .settingBlock{
+      margin-bottom:24px;
+      padding:16px;
+      background:#1b1b1b;
+      border-radius:12px;
     }
   </style>
 </head>
 
 <body>
-  <!-- Top bar (common) -->
-  <header class="topbar" role="banner">
-    <div class="topbar__row">
-      <div class="brand">
-        <div class="brand__title">TapSpeak Vocab</div>
-        <div class="brand__sub">
-          <!-- 要望：いまは：たんご 0こ（モード側の数を入れる） -->
-          <span class="modeTag" id="modeTag" data-mode="words">いまは：たんご 0こ</span>
 
-          <!-- 常時：ポイントは最上部に1つだけ -->
-          <span class="pill" aria-label="ポイント">
-            ⭐ <strong id="pointsText">0</strong>
-          </span>
+<!-- ユーザー選択 -->
+<section id="viewUser">
+  <button class="userBtn" data-user="riona">りおな</button>
+  <button class="userBtn" data-user="soma">そうま</button>
+  <div class="devNote">開発者用</div>
+</section>
 
-          <!-- 「どんな単語だっけ？」= 現在の範囲（子ども向け） -->
-          <span class="pill" aria-label="ことばのはんい">
-            ことば：<strong id="scopeText">ぜんかてごり</strong>
-          </span>
+<!-- 個人ホーム -->
+<section id="viewHome" class="hidden">
+  <div class="homeTop">
+    <div>⭐ <span id="pointText">0</span></div>
+    <button id="btnUser">👤</button>
+  </div>
 
-          <!-- 復習対象（いま やる ことば）数 -->
-          <span class="pill" aria-label="いま やる ことば">
-            いま やる：<strong id="dueCountText">0</strong>こ
-          </span>
-        </div>
-      </div>
+  <div class="homeCenter">
+    <button class="btnWord" id="goWords">たんご</button>
+    <button class="btnReview" id="goReview">
+      ふくしゅう：<span id="dueCount">0</span>こ
+    </button>
+  </div>
 
-      <div class="actions" role="navigation" aria-label="操作">
-        <button class="btn btn--icon" id="btnHome" title="ホーム">🏠</button>
-        <button class="btn" id="btnCategory" title="カテゴリ切替">🔄 かてごり</button>
-        <button class="btn btn--primary" id="btnModeWords" title="単語モード">📘 たんご</button>
-        <button class="btn btn--green" id="btnModeReview" title="復習モード">🟩 ふくしゅう</button>
-        <button class="btn" id="btnUser" title="ユーザー切替">👤 きりかえ</button>
-      </div>
-    </div>
-  </header>
+  <div class="homeBottom">
+    <button id="goSettings">設定</button>
+  </div>
+</section>
 
-  <main class="wrap" role="main">
-    <!-- USER SELECT (起動直後にここを表示) -->
-    <section id="viewUser" class="hidden">
-      <div class="viewTitle">ユーザー</div>
+<!-- たんご -->
+<section id="viewWords" class="hidden">
+  <div class="topSwitch">
+    <button id="toReview">ふくしゅう</button>
+    <button id="backHome1">←</button>
+  </div>
+  <div id="wordsRoot"></div>
+</section>
 
-      <div class="card">
-        <div class="card__head">
-          <h2 class="card__title">えらぶ</h2>
-          <span class="miniBadge">⭐ <span id="userPointsText">0</span></span>
-        </div>
-        <div class="list" id="userList"></div>
-      </div>
+<!-- ふくしゅう -->
+<section id="viewReview" class="hidden">
+  <div class="topSwitch">
+    <button id="toWords">たんご</button>
+    <button id="backHome2">←</button>
+  </div>
+  <div id="reviewRoot"></div>
+</section>
 
-      <!-- リセットはユーザー選択画面でできるように（要望） -->
-      <div class="card card--small" style="margin-top:14px;">
-        <div class="card__head">
-          <h2 class="card__title">りせっと</h2>
-        </div>
+<!-- 設定 -->
+<section id="viewSettings" class="hidden">
+  <h2>設定</h2>
 
-        <div class="screenNote" style="margin:0 0 10px;">
-          がくしゅう じょうきょう（stage / due / enrolled / かいすう）と ぽいんと を すべて さいしょ に もどします。
-        </div>
+  <div class="settingBlock">
+    <h3>ユーザーアイコン</h3>
+    <input type="file" id="iconInput">
+  </div>
 
-        <div class="row">
-          <input id="resetPin" class="pinInput" type="password" inputmode="numeric" placeholder="PIN" />
-          <button id="btnResetAll" class="btnDanger">りせっと</button>
-        </div>
+  <div class="settingBlock">
+    <h3>バックアップ</h3>
+    <button id="exportData">書き出す</button>
+    <input type="file" id="importData">
+  </div>
 
-        <div class="screenNote" id="resetResult" style="margin:10px 0 0;">&nbsp;</div>
-      </div>
-    </section>
+  <div class="settingBlock">
+    <h3>ポイントリセット</h3>
+    <input type="password" id="pinPoint" placeholder="PIN">
+    <button id="resetPoint">実行</button>
+  </div>
 
-    <!-- HOME -->
-    <section id="viewHome" class="hidden">
-      <div class="viewTitle">ホーム</div>
+  <div class="settingBlock">
+    <h3>学習をすべてリセット</h3>
+    <input type="password" id="pinAll" placeholder="PIN">
+    <button id="resetAll">実行</button>
+  </div>
 
-      <div class="grid">
-        <!-- Words -->
-        <div class="card">
-          <div class="card__head">
-            <h2 class="card__title">たんご</h2>
-          </div>
-          <div class="card__actions">
-            <button class="btn btn--primary" id="goWords">たんごへ</button>
-          </div>
-        </div>
+  <button id="backHome3">← もどる</button>
+</section>
 
-        <!-- Review -->
-        <div class="card">
-          <div class="card__head">
-            <h2 class="card__title">ふくしゅう</h2>
-            <div style="font-size:13px;color:rgba(255,255,255,.65);font-weight:900;">
-              いま やる：<span id="dueCountText2">0</span>こ
-            </div>
-          </div>
-          <div class="card__actions">
-            <button class="btn btn--green" id="goReview">ふくしゅうへ</button>
-          </div>
-        </div>
-
-        <!-- Settings (small) -->
-        <div class="card card--small">
-          <div class="card__head">
-            <h2 class="card__title">せってい</h2>
-          </div>
-          <div class="card__actions">
-            <button class="btn" id="goSettings">せっていへ</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- WORDS -->
-    <section id="viewWords" class="hidden">
-      <div class="viewTitle">たんご</div>
-      <!-- words.js がここに描画する前提（あなたの実装に合わせやすいよう空のコンテナを用意） -->
-      <div id="wordsRoot"></div>
-    </section>
-
-    <!-- REVIEW -->
-    <section id="viewReview" class="hidden">
-      <div class="viewTitle">ふくしゅう</div>
-      <div id="reviewRoot"></div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="viewSettings" class="hidden">
-      <div class="viewTitle">せってい</div>
-      <div id="settingsRoot"></div>
-    </section>
-  </main>
-
-  <!-- JS: 完全版の実装ファイルを読み込む -->
-  <script src="js/storage.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/filters.js"></script>
-  <script src="js/review.js"></script>
-
-  <!-- あなたが既に修正済みの words.js がある前提（無い場合でも落ちないよう app.js 側でガードする） -->
-  <script src="js/words.js"></script>
-
-  <script src="js/app.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/words.js"></script>
+<script src="js/review.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
