@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>TapSpeak Vocab</title>
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="app-title">TapSpeak Vocab</div>
+      <div class="app-sub" id="subTitle"></div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn ghost" id="btnUserSwitch" title="ユーザー切替">👤切替</button>
+    </div>
+  </header>
+
+  <main id="app" class="app"></main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="./js/storage.js"></script>
+  <script src="./js/tts.js"></script>
+  <script src="./js/srs.js"></script>
+  <script src="./js/data.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
