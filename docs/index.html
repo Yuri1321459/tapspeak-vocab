@@ -1,184 +1,173 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>TapSpeak Vocab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-      background:#0b1220;
-      color:#fff;
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #fff;
     }
-    .hidden{display:none}
 
-    /* 共通 */
-    button{
-      font-size:20px;
-      font-weight:800;
-      padding:18px;
-      border-radius:16px;
-      border:none;
-      cursor:pointer;
+    .screen {
+      display: none;
+      min-height: 100vh;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* ===== 共通 ===== */
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    button {
+      font-size: 22px;
+      font-weight: 700;
+      padding: 18px 28px;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
     }
 
     /* ===== ユーザー選択 ===== */
-    #viewUser{
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      gap:24px;
-    }
-    .userBtn{
-      width:70%;
-      max-width:320px;
-      background:#1f2a44;
-    }
-    .devNote{
-      position:fixed;
-      bottom:8px;
-      font-size:12px;
-      opacity:.5;
+    .user-btn {
+      width: 80%;
+      max-width: 320px;
+      background: #e5e7eb;
+      color: #111827;
     }
 
-    /* ===== 個人ホーム ===== */
-    #viewHome{
-      padding:16px;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-    .homeTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-    .homeCenter{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      gap:24px;
-    }
-    .btnWord{background:#3b6cff}
-    .btnReview{background:#1ec98a}
-    .homeBottom{
-      text-align:center;
-      font-size:14px;
-      opacity:.7;
+    .user-btn:active {
+      opacity: 0.85;
     }
 
-    /* ===== たんご / ふくしゅう ===== */
-    #viewWords{background:#14285a;min-height:100vh;padding:16px}
-    #viewReview{background:#0f3d2c;min-height:100vh;padding:16px}
-
-    .topSwitch{
-      display:flex;
-      justify-content:space-between;
-      margin-bottom:16px;
+    .dev-user {
+      position: fixed;
+      bottom: 12px;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.6;
+      cursor: pointer;
     }
 
-    /* ===== 設定 ===== */
-    #viewSettings{
-      padding:16px;
-      background:#111;
-      min-height:100vh;
+    /* ===== 個人画面 ===== */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
     }
-    .settingBlock{
-      margin-bottom:24px;
-      padding:16px;
-      background:#1b1b1b;
-      border-radius:12px;
+
+    .points {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .user-switch {
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .home-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .btn-word {
+      background: #3b82f6;
+      color: #fff;
+      width: 80%;
+      max-width: 320px;
+    }
+
+    .btn-review {
+      background: #22c55e;
+      color: #fff;
+      width: 80%;
+      max-width: 320px;
+    }
+
+    .settings {
+      position: fixed;
+      bottom: 16px;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      opacity: 0.7;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-<!-- ユーザー選択 -->
-<section id="viewUser">
-  <button class="userBtn" data-user="riona">りおな</button>
-  <button class="userBtn" data-user="soma">そうま</button>
-  <div class="devNote">開発者用</div>
-</section>
+<!-- ===== ユーザー選択画面 ===== -->
+<div id="screen-user-select" class="screen active center">
+  <button class="user-btn" onclick="selectUser('riona')">りおな</button>
+  <button class="user-btn" onclick="selectUser('soma')">そうま</button>
 
-<!-- 個人ホーム -->
-<section id="viewHome" class="hidden">
-  <div class="homeTop">
-    <div>⭐ <span id="pointText">0</span></div>
-    <button id="btnUser">👤</button>
+  <div class="dev-user" onclick="selectUser('developer')">
+    開発者用
+  </div>
+</div>
+
+<!-- ===== 個人画面（ホーム） ===== -->
+<div id="screen-home" class="screen">
+  <div class="top-bar">
+    <div class="points">⭐ <span id="pointValue">0</span></div>
+    <div class="user-switch" onclick="goUserSelect()">👤</div>
   </div>
 
-  <div class="homeCenter">
-    <button class="btnWord" id="goWords">たんご</button>
-    <button class="btnReview" id="goReview">
-      ふくしゅう：<span id="dueCount">0</span>こ
-    </button>
+  <div class="home-buttons">
+    <button class="btn-word" onclick="goWord()">たんご</button>
+    <button class="btn-review" onclick="goReview()">ふくしゅう：<span id="reviewCount">0</span>こ</button>
   </div>
 
-  <div class="homeBottom">
-    <button id="goSettings">設定</button>
-  </div>
-</section>
+  <div class="settings" onclick="goSettings()">設定</div>
+</div>
 
-<!-- たんご -->
-<section id="viewWords" class="hidden">
-  <div class="topSwitch">
-    <button id="toReview">ふくしゅう</button>
-    <button id="backHome1">←</button>
-  </div>
-  <div id="wordsRoot"></div>
-</section>
+<script>
+  let currentUser = null;
 
-<!-- ふくしゅう -->
-<section id="viewReview" class="hidden">
-  <div class="topSwitch">
-    <button id="toWords">たんご</button>
-    <button id="backHome2">←</button>
-  </div>
-  <div id="reviewRoot"></div>
-</section>
+  function selectUser(userId) {
+    currentUser = userId;
+    document.getElementById('screen-user-select').classList.remove('active');
+    document.getElementById('screen-home').classList.add('active');
+  }
 
-<!-- 設定 -->
-<section id="viewSettings" class="hidden">
-  <h2>設定</h2>
+  function goUserSelect() {
+    document.getElementById('screen-home').classList.remove('active');
+    document.getElementById('screen-user-select').classList.add('active');
+  }
 
-  <div class="settingBlock">
-    <h3>ユーザーアイコン</h3>
-    <input type="file" id="iconInput">
-  </div>
+  function goWord() {
+    alert('たんご画面へ');
+  }
 
-  <div class="settingBlock">
-    <h3>バックアップ</h3>
-    <button id="exportData">書き出す</button>
-    <input type="file" id="importData">
-  </div>
+  function goReview() {
+    alert('ふくしゅう画面へ');
+  }
 
-  <div class="settingBlock">
-    <h3>ポイントリセット</h3>
-    <input type="password" id="pinPoint" placeholder="PIN">
-    <button id="resetPoint">実行</button>
-  </div>
+  function goSettings() {
+    alert('設定画面へ');
+  }
+</script>
 
-  <div class="settingBlock">
-    <h3>学習をすべてリセット</h3>
-    <input type="password" id="pinAll" placeholder="PIN">
-    <button id="resetAll">実行</button>
-  </div>
-
-  <button id="backHome3">← もどる</button>
-</section>
-
-<script src="js/storage.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/words.js"></script>
-<script src="js/review.js"></script>
-<script src="js/app.js"></script>
 </body>
 </html>
-
-
